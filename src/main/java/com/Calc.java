@@ -1,4 +1,9 @@
 package com;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 //다항식 계산기 구현
 //
 //테스트케이스를 하나씩 도입해서 전부 만족하도록 구현
@@ -17,29 +22,7 @@ public class Calc {
         //Step04. 여러개 계산
         //Step04. 섞인 부호 순서
 
-        String[] NumberAndPlus = s.split(" "); //공백을 기준으로 분할
-
-        //일단 ideal 만
-        for(int i=1;i<NumberAndPlus.length;i++){
-            String now = NumberAndPlus[i];
-            int a = Integer.parseInt(NumberAndPlus[i-1]);
-            int b = Integer.parseInt(NumberAndPlus[i+1]);
-
-            switch (now){
-                case "*":
-                    return CalcService.multiply(a,b);
-                case "/":
-                    return CalcService.divide(a,b);
-                case "+":
-                    //+ 이전의 결과와 이후의 결과를 합친다
-                    return CalcService.add(a,b);
-                case "-":
-                    return CalcService.subtract(a,b);
-                default: //숫자인 경우 패스
-                    break;
-            }
-
-        }
-        return 2;
+        List<String> NumberAndSign = new ArrayList<>(Arrays.asList(s.split(" "))); //공백을 기준으로 분할
+        return CalcService.getResult(NumberAndSign);
     }
 }
