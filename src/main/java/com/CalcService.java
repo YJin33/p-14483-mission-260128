@@ -3,7 +3,8 @@ package com;
 import java.util.List;
 
 public class CalcService {
-    public static int getClosed(List<String>NumberSign) {
+    //1. 괄호 처리 -> calculate 결과 반환
+    public static int getResult(List<String>NumberSign) {
         int idx = 0;
         int startIdx = 0;
         int result;
@@ -15,10 +16,11 @@ public class CalcService {
                     idx++;
                     break;
                 case ")":
-                    NumberSign.remove(idx);
-                    result = getResult(NumberSign.subList(startIdx+1, idx)); //괄호 제외하고 주기
+                    NumberSign.remove(idx); //뒤에 있는 애를 먼저 지우기
+                    //subList는 참조이므로 따로 지우지 X
+                    result = calculate(NumberSign.subList(startIdx+1, idx)); //괄호 제외하고 주기
                     NumberSign.remove(startIdx);
-                    idx=0;
+                    idx=0; //괄호 가장 마지막 거 처리, 이후 처음부터 탐색
                     startIdx=0;
                     break;
                 default:
@@ -26,11 +28,11 @@ public class CalcService {
                     break;
             }
         }
-        return getResult(NumberSign);
+        return calculate(NumberSign);
     }
 
-    //재귀 사용 위해 분리
-    public static int getResult(List<String>NumberAndSign){
+    //2. * / 먼저 처리, 이후 + - 처리
+    private static int calculate(List<String>NumberAndSign){
         //1개인 경우 : 정답 리턴
         if(NumberAndSign.size()==1){
             try{
@@ -70,7 +72,7 @@ public class CalcService {
         idx=1;
         while(NumberAndSign.contains("+")||NumberAndSign.contains("-")){
             String now = NumberAndSign.get(idx);
-            int a = Integer.parseInt(NumberAndSign.get(idx-1));
+            int a = Integer.parseInt(NumberAndSign.get(idx-1)); //여기서는 남은 부호 없으므로 try catch X
             int b = Integer.parseInt(NumberAndSign.get(idx+1));
             int result;
             switch (now){
@@ -94,13 +96,13 @@ public class CalcService {
         }
     }
 
-    public static void updateList(List<String> NumberAndSign, int startIdx, int endIdx, int result){
+    private static void updateList(List<String> NumberAndSign, int startIdx, int endIdx, int result){
         String calculated = String.valueOf(result);
 
         //사용한 숫자 제외하고 그 위치에 계산한 값 넣기
         NumberAndSign.set(startIdx,calculated);
-        for(int i=endIdx; i>startIdx; i--){
-            NumberAndSign.remove(i); //ArrayList이므로 뒤에서부터 지우기
+        for(int i=endIdx; i>startIdx; i--){ //ArrayList이므로 뒤에서부터 지우기
+            NumberAndSign.remove(i);
         }
     }
 
