@@ -23,6 +23,7 @@ public class Calc {
         //Step04. 섞인 부호 순서
 
         //괄호 구분
+        s = s.replaceAll("-[(]", "-1 * (");
         s = s.replaceAll("[(]","( ");
         s = s.replaceAll("[)]", " )");
         List<String> NumberAndSign = new ArrayList<>(Arrays.asList(s.split(" "))); //공백을 기준으로 분할
