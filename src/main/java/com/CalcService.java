@@ -3,6 +3,31 @@ package com;
 import java.util.List;
 
 public class CalcService {
+    public static int getClosed(List<String>NumberSign) {
+        int idx = 0;
+        int startIdx = 0;
+        int result;
+        while (NumberSign.contains("(")) {
+            String now = NumberSign.get(idx);
+            switch (now) {
+                case "(":
+                    startIdx = idx;
+                    idx++;
+                    break;
+                case ")":
+                    NumberSign.remove(idx);
+                    result = getResult(NumberSign.subList(startIdx+1, idx)); //괄호 제외하고 주기
+                    NumberSign.remove(startIdx);
+                    idx=0;
+                    startIdx=0;
+                    break;
+                default:
+                    idx++;
+                    break;
+            }
+        }
+        return getResult(NumberSign);
+    }
 
     //재귀 사용 위해 분리
     public static int getResult(List<String>NumberAndSign){
@@ -30,11 +55,11 @@ public class CalcService {
             switch (now){
                 case "*":
                     result = multiply(a,b); //붙어 있는 애들 계산
-                    updateList(NumberAndSign, idx, result); //계산한 값을 다시 위치에 넣어서 재귀
+                    updateList(NumberAndSign, idx-1, idx+1, result); //계산한 값을 다시 위치에 넣어서 재귀
                     break;
                 case "/":
                     result = divide(a,b);
-                    updateList(NumberAndSign, idx, result);
+                    updateList(NumberAndSign, idx-1, idx+1, result);
                     break;
                 default: //숫자인 경우 패스
                     idx++;
@@ -51,11 +76,11 @@ public class CalcService {
             switch (now){
                 case "+":
                     result = add(a,b);
-                    updateList(NumberAndSign, idx, result);
+                    updateList(NumberAndSign, idx-1, idx+1, result);
                     break;
                 case "-":
                     result = subtract(a,b);
-                    updateList(NumberAndSign, idx, result);
+                    updateList(NumberAndSign, idx-1, idx+1, result);
                     break;
                 default: //숫자인 경우 패스
                     idx++;
@@ -69,13 +94,14 @@ public class CalcService {
         }
     }
 
-    private static void updateList(List<String> NumberAndSign, int idx, int result){
+    public static void updateList(List<String> NumberAndSign, int startIdx, int endIdx, int result){
         String calculated = String.valueOf(result);
 
         //사용한 숫자 제외하고 그 위치에 계산한 값 넣기
-        NumberAndSign.set(idx,calculated);
-        NumberAndSign.remove(idx+1);
-        NumberAndSign.remove(idx-1);
+        NumberAndSign.set(startIdx,calculated);
+        for(int i=endIdx; i>startIdx; i--){
+            NumberAndSign.remove(i); //ArrayList이므로 뒤에서부터 지우기
+        }
     }
 
     private static int add(int a, int b){

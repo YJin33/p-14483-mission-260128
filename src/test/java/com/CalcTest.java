@@ -1,4 +1,5 @@
 package com;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -172,9 +173,11 @@ public class CalcTest {
     void t28() {
         assertThat(Calc.run("3 * 1 + (1 - (4 * 1 - (1 - 1)))")).isEqualTo(0);
     }
+
     @Test
     @DisplayName("* 먼저")
-    void t29(){
+    void t29() {
         assertThat(Calc.run("3 * 2 * 2 + 7")).isEqualTo(19);
     }
+
 }
