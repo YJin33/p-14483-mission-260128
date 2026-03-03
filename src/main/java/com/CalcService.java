@@ -12,10 +12,9 @@ public class CalcService {
             int i = NumberSign.subList(0, j+1).lastIndexOf("("); //그 바로 앞의 i
 
             NumberSign.remove(j);
+            result = getResult(NumberSign.subList(i+1,j)); //updateList 생략
             NumberSign.remove(i);
-            result = getResult(NumberSign.subList(i,j-1)); //updateList 생략
         }
-
         return calculate(NumberSign);
     }
 
@@ -31,38 +30,55 @@ public class CalcService {
         }
 
         // * / 가 있는 경우 우선적으로 처리
-        int idx=1;
-        while(NumberAndSign.contains("*")||NumberAndSign.contains("/")){
-            String now = NumberAndSign.get(idx);
-            int result,a,b;
-            try{
-                a = Integer.parseInt(NumberAndSign.get(idx-1));
-                b = Integer.parseInt(NumberAndSign.get(idx+1));
-            }catch (Exception e){
-                idx++;
-                continue;
-            }
-            switch (now){
-                case "*":
-                    result = multiply(a,b); //붙어 있는 애들 계산
-                    updateList(NumberAndSign, idx-1, idx+1, result); //계산한 값을 다시 위치에 넣어서 재귀
-                    break;
-                case "/":
-                    result = divide(a,b);
-                    updateList(NumberAndSign, idx-1, idx+1, result);
-                    break;
-                default: //숫자인 경우 패스
-                    idx++;
-                    break;
-            }
+        if(!NumberAndSign.contains("*")&& !NumberAndSign.contains("/")){
+            calculateSecond(NumberAndSign.subList(0,NumberAndSign.size()));//  + -
         }
+        calculateFirst(NumberAndSign.subList(0,NumberAndSign.size()));// * /
 
-        idx=1;
+        return calculate(NumberAndSign);
+    }
+
+    private static void calculateFirst(List<String>NumberAndSign){
+        //한번에 하나씩만 처리, calculate가 여러번 돌게 됨
+        if(NumberAndSign.size()==1){
+            return;
+        }
+        int i = NumberAndSign.indexOf("*");
+        int j = NumberAndSign.indexOf("/");
+        i = i==-1? NumberAndSign.size(): i;
+        j = j==-1? NumberAndSign.size(): j;
+        int idx = Math.min(i, j);
+
+        String now = NumberAndSign.get(idx);
+        int result=0,a,b;
+
+        a = Integer.parseInt(NumberAndSign.get(idx-1));
+        b = Integer.parseInt(NumberAndSign.get(idx+1));
+
+        switch (now){
+            case "*":
+                result = multiply(a,b); //붙어 있는 애들 계산
+                break;
+            case "/":
+                result = divide(a,b);
+                break;
+        }
+        updateList(NumberAndSign, idx-1, idx+1, result);
+    }
+
+    private static void calculateSecond(List<String> NumberAndSign) {
+        //calculate가 여러번 돌 필요 X, 한번에 전부 처리
+        if(NumberAndSign.size()==1){
+            return;
+        }
+        int idx=1;
+
         while(NumberAndSign.contains("+")||NumberAndSign.contains("-")){
             String now = NumberAndSign.get(idx);
-            int a = Integer.parseInt(NumberAndSign.get(idx-1)); //여기서는 남은 부호 없으므로 try catch X
+            int a = Integer.parseInt(NumberAndSign.get(idx-1));
             int b = Integer.parseInt(NumberAndSign.get(idx+1));
             int result;
+
             switch (now){
                 case "+":
                     result = add(a,b);
@@ -77,13 +93,7 @@ public class CalcService {
                     break;
             }
         }
-        try{
-            return Integer.parseInt(NumberAndSign.get(0));
-        } catch (Exception e) {
-            throw e;
-        }
     }
-
     private static void updateList(List<String> NumberAndSign, int startIdx, int endIdx, int result){
         String calculated = String.valueOf(result);
 
