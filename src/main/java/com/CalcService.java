@@ -5,29 +5,17 @@ import java.util.List;
 public class CalcService {
     //1. 괄호 처리 -> calculate 결과 반환
     public static int getResult(List<String>NumberSign) {
-        int idx = 0;
-        int startIdx = 0;
         int result;
-        while (NumberSign.contains("(")) {
-            String now = NumberSign.get(idx);
-            switch (now) {
-                case "(":
-                    startIdx = idx;
-                    idx++;
-                    break;
-                case ")":
-                    NumberSign.remove(idx); //뒤에 있는 애를 먼저 지우기
-                    //subList는 참조이므로 따로 지우지 X
-                    result = calculate(NumberSign.subList(startIdx+1, idx)); //괄호 제외하고 주기
-                    NumberSign.remove(startIdx);
-                    idx=0; //괄호 가장 마지막 거 처리, 이후 처음부터 탐색
-                    startIdx=0;
-                    break;
-                default:
-                    idx++;
-                    break;
-            }
+
+        while(NumberSign.contains("(")){
+            int j = NumberSign.indexOf(")"); //가장 앞에 있는 )
+            int i = NumberSign.subList(0, j+1).lastIndexOf("("); //그 바로 앞의 i
+
+            NumberSign.remove(j);
+            NumberSign.remove(i);
+            result = getResult(NumberSign.subList(i,j-1)); //updateList 생략
         }
+
         return calculate(NumberSign);
     }
 
